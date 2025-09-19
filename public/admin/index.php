@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . "/../../app/initialize.php";
- 
+
 
 
 // セッションの内容を確認
