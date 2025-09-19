@@ -6,7 +6,7 @@ use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
 
 // セッション開始
-ob_start(); 
+ob_start();
 session_start();
 
 // テンプレートエンジンを使う
