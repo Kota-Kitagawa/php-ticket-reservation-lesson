@@ -8,6 +8,23 @@ use App\DbConnection;
 
 class TicketPurchase
 {
+    public static function getByToken(string $token): array | false
+    {
+        try {
+            $dbh = DbConnection::get();
+            $sql = 'SELECT * FROM ticket_purchases WHERE token = :token;';
+            $pre = $dbh->prepare($sql);
+            $pre->bindValue(':token', $token, \PDO::PARAM_STR);
+            $pre->execute();
+            $datum = $pre->fetch();
+        } catch (\PDOException $e) {
+            // XXX 暫定: 本来はlogに出力する & エラーページを出力する
+            echo $e->getMessage();
+            exit;
+        }
+
+        return $datum;
+    }
     // 全権取得
     public static function getAll(): array
     {

@@ -6,6 +6,8 @@ require_once __DIR__ . "/../app/initialize.php";
 
 
 use App\DbConnection;
+use App\Models\TicketPurchase;
+use App\Models\TicketTokenUsage;
 
 // tokenの把握
 if ('' === ($token = strval($_GET['token'] ?? ''))) {
@@ -17,32 +19,20 @@ if ('' === ($token = strval($_GET['token'] ?? ''))) {
 
 /* tokenの確認 */
 // DBハンドルの取得
-try {
-    $dbh = DbConnection::get();
-} catch (\PDOException $e) {
-    // XXX 暫定: 本来はlogに出力する & エラーページを出力する
-    echo $e->getMessage();
-    exit;
-}
-try {
-    // データの取得
-    // プリペアドステートメント
-    $sql = 'SELECT * FROM ticket_purchases WHERE token = :token;';
-    $pre = $dbh->prepare($sql);
-    //
-    $pre->bindValue(':token', $token, PDO::PARAM_STR);
-    //
-    $pre->execute();
-    $datum = $pre->fetch();
-} catch (\PDOException $e) {
-    // XXX 暫定: 本来はlogに出力する & エラーページを出力する
-    echo $e->getMessage();
-    exit;
-}
-
-// なかったらエラー出力
+$datum = TicketPurchase::getBytoken($token);
 if (false === $datum) {
     echo $twig->render('entry_error.twig');
+    exit;
+}
+// 使用済みかどうかのチェック
+// tokenの更新日時が作成日時と異なっていたら使用済み
+$sql = 'SELECT * from ticket_token_usages WHERE token = :token';
+$pre = $dbh->prepare($sql);
+$pre->execure();
+
+
+if (false === TicketTokenUsage::consumeToken($token)) {
+    echo "token使用済み";
     exit;
 }
 
