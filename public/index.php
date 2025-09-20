@@ -15,9 +15,9 @@ unset($_SESSION['input'], $_SESSION['errord']);
 
 
 
-
 // 表示
 echo $twig->render('index.twig', [
     'input' => $input,
     'errord' => $errord,
+    'title' => $event_policy->eventTitle(),
 ]);

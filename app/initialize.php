@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
+use App\Config;
 
 // セッション開始
 ob_start();
@@ -24,3 +25,15 @@ date_default_timezone_set('Asia/Tokyo');
 // セキュリティ用に「入れて」と言われたヘッダ
 header('X-Frame-Options: DENY');
 header('X-Content-Type-Options: nosniff');
+
+
+// イベントポリシーの把握
+$event = Config::get('event');
+// var_dump($event);
+// $obj = new \App\Domain\Validate\EmailValidatorSimple();
+// var_dump($obj);
+
+$event_policy = new $event['policy_class'](
+    new $event['quantity_policy']['class'](),
+    new $event['email_validator']['class'](),
+);
